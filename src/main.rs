@@ -1,38 +1,15 @@
-#[macro_use] extern crate serde;
-#[macro_use] extern crate rocket;
+use teloxide::prelude::*;
 
-use rocket::serde::{Serialize, Deserialize, json::{Json, Value, json}};
-use chrono::{Utc,Locale};
+#[tokio::main]
+async fn main() {
+  teloxide::enable_logging!();
 
-pub mod telegram;
+  log::info!("Starting dices_bot");
 
-#[post("/webhook", format = "application/json", data = "<update>")]
-fn update(update: Json<telegram::Update>) {
-  println!("DATA: {}", update.into_inner())
-}
+  let bot = Bot::from_env().auto_send();
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(crate="rocket::serde")]
-struct Message<'a> {
-  id: u64,
-  message: &'a str,
-  timestamp: Option<String>
-}
-
-#[post("/test", format="application/json", data="<body>")]
-fn test<'a>(body: Json<Message<'a>>) -> Value {
-  let message = Message::copy(body.into_inner());
-  let timestamp = Utc::now().format_localized("%c", Locale::pt_BR);
-  message.timestamp = Some(format!("{}", timestamp));
-  json!(message)
-}
-
-#[get("/")]
-fn index() -> &'static str {
-  "Hello, world!"
-}
-
-#[launch]
-fn rocket() -> _ {
-  rocket::build().mount("/", routes![index, update, test])
+  teloxide::repl(bot, |message| async move {
+     message.answer_dice().await?;
+     respond(())
+  }).await;
 }

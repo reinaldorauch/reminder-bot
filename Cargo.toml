@@ -5,13 +5,8 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dependencies.rocket]
-version = "0.5.0-rc.1"
-features = ["json"]
-
-[dependencies.chrono]
-version = "0.4.19"
-features = ["unstable-locales"]
-
 [dependencies]
-serde = "1.0.130"
+teloxide = { version = "0.5.3", features = ["macros"] }
+log = "0.4"
+pretty_env_logger = "0.4.0"
+tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
